@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Checker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Top 10 Stocks</h2>
+            {% if top_stocks %}
+                <ul>
+                    {% for stock in top_stocks %}
+                        <li>
+                            <strong>{{ stock.stock_symbol }}</strong><br>
+                            Current Price: ${{ stock.current_price }}<br>
+                            Previous Close: ${{ stock.previous_close }}<br>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No stock data available.</p>
+            {% endif %}
+        </div>
+        <div class="main">
+            <h1>Stock Checker</h1>
+            <form action="/search" method="POST" id="stockForm">
+                <input type="text" name="stock_symbol" placeholder="Enter stock symbol (e.g. AAPL)" required>
+                <select name="interval" id="intervalSelect">
+                    <option value="1min">1 Minute</option>
+                    <option value="5min">5 Minutes</option>
+                    <option value="15min">15 Minutes</option>
+                    <option value="30min">30 Minutes</option>
+                    <option value="60min" selected>1 Hour</option>
+                </select>
+                <button type="submit">Search</button>
+            </form>
+            {% if stock_info %}
+                {% if stock_info.error %}
+                    <p>{{ stock_info.error }}</p>
+                {% else %}
+                    <h2>Stock Information for {{ stock_info.stock_symbol }}</h2>
+                    <div class="stock-info-grid">
+                        <p><strong>Previous Close:</strong> ${{ stock_info.previous_close }}</p>
+                        <p><strong>Current Price:</strong> ${{ stock_info.current_price }}</p>
+                        <p><strong>Open:</strong> ${{ stock_info.open_price }}</p>
+                        <p><strong>Day's Range:</strong> {{ stock_info.day_low }} - {{ stock_info.day_high }}</p>
+                        <p><strong>52-Week Range:</strong> {{ stock_info.year_low }} - {{ stock_info.year_high }}</p>
+                        <p><strong>Market Cap:</strong> {{ stock_info.market_cap }}</p>
+                        <p><strong>P/E Ratio:</strong> {{ stock_info.pe_ratio }}</p>
+                        <p><strong>EPS:</strong> {{ stock_info.eps }}</p>
+                        <p><strong>Dividend Yield:</strong> {{ stock_info.div_yield }}</p>
+                        <p><strong>Beta:</strong> {{ stock_info.beta }}</p>
+                        <p><strong>Volume:</strong> {{ stock_info.volume }}</p>
+                        <p><strong>Avg. Volume:</strong> {{ stock_info.avg_volume }}</p>
+                        <p><strong>Target High Price:</strong> ${{ stock_info.target_high_price }}</p>
+                        <p><strong>Target Low Price:</strong> ${{ stock_info.target_low_price }}</p>
+                        <p><strong>Target Mean Price:</strong> ${{ stock_info.target_mean_price }}</p>
+                        <p><strong>Recommendation Mean:</strong> {{ stock_info.recommendation_mean }}</p>
+
+                    </div>
+                    <h2>Stock Price Trend</h2>
+                    <canvas id="stockChart"></canvas>
+                    <div id="timeLabels"></div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        // Initialize the chart with default data
+        var ctx = document.getElementById('stockChart').getContext('2d');
+        var stockChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ time_labels | tojson }}, // Pass time labels from Flask
+                datasets: [{
+                    label: 'Stock Price',
+                    data: {{ stock_chart_data | tojson }}, // Pass stock data from Flask
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Price (USD)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Update the chart with new data
+        function updateChart(labels, data) {
+            stockChart.data.labels = labels;
+            stockChart.data.datasets[0].data = data;
+            stockChart.update();
+        }
+
+        // Form submission handling
+        document.getElementById('stockForm').onsubmit = function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            fetch('/search', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateChart(data.time_labels, data.stock_chart_data);
+            });
+        };
+    </script>
+</body>
+</html>

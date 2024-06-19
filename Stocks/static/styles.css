@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1e1e1e; /* Dark background */
+    color: #ffffff; /* White text */
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+}
+
+.sidebar {
+    width: 25%;
+    background: #333; /* Dark sidebar background */
+    color: #ffffff; /* White text in the sidebar */
+    padding: 20px;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar h2 {
+    color: #ffffff; /* White text for headings */
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #444;
+    background: #444; /* Slightly lighter dark background */
+    color: #ffffff; /* White text */
+    border-radius: 5px;
+}
+
+.main {
+    width: 75%;
+    padding: 20px;
+    background-color: #1e1e1e; /* Match main area background to body background */
+}
+
+h1, h2 {
+    color: #ff4c4c; /* Red text for headings */
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    width: 200px;
+    margin-right: 10px;
+    background-color: #333; /* Dark background for input */
+    color: #ffffff; /* White text */
+    border: 1px solid #555; /* Slightly lighter border */
+}
+
+button {
+    padding: 10px 20px;
+    background: #ff4c4c; /* Red background for button */
+    color: #ffffff; /* White text */
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #ff1c1c; /* Darker red for hover effect */
+}
+
+a {
+    color: #ff4c4c; /* Red text for links */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Grid layout for stock information */
+.stock-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.stock-info-grid p {
+    margin: 0;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 5px;
+}
+
+.stock-info-grid strong {
+    color: #ff4c4c;
+}
